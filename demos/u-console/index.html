@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>以下範上 · 智能U管后台 DEMO</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div class="wm" aria-hidden="true">
+  <div class="wm-stack">
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">智能U管操控流程</div></div>
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下犯上</div><div class="wm-sub">智能U管操控流程</div></div>
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">智能U管操控流程</div></div>
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下犯上</div><div class="wm-sub">智能U管操控流程</div></div>
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">智能U管操控流程</div></div>
+    <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下犯上</div><div class="wm-sub">智能U管操控流程</div></div>
+  </div>
+</div>
+<div class="scanline"></div>
+<div class="app"><div class="shell">
+  <div class="topbar">
+    <div class="brand"><div class="logo">範</div><div>
+      <h1>以下範上 · 智能U管后台</h1>
+      <p>演示模板 · 左手机预览 · 右后台控制</p>
+    </div></div>
+    <button type="button" class="pill pill-video" id="openFlowVideo" title="打开项目2流程视频">视频演示</button>
+  </div>
+
+  <div class="stage">
+    <!-- LEFT PHONE -->
+    <section class="phone-col" id="phonePanel">
+      <div class="col-title">
+        <h2>Mobile Preview</h2>
+        <button class="jump-chip" type="button" data-jump="adminPanel">点击跳转后台</button>
+      </div>
+            <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+        <div class="phone-status"><span>以下範上</span><span>DEMO</span></div>
+        <div class="phone-body phone-auth">
+          <div class="phone-top">
+            <div class="phone-brand">ETH/TRX 网络钱包通用</div>
+            <div class="wallet-chip" id="phoneWalletChip">未连接</div>
+          </div>
+
+          <div class="phone-banner" id="phoneBanner">流程：连接钱包 → 确认钱包</div>
+
+          <div class="phone-card phone-main">
+            <div class="phone-step" id="phoneStepText">第 1 步 · 连接钱包</div>
+            <div class="phone-title" id="phoneTitle">连接钱包</div>
+            <div class="phone-desc" id="phoneDesc">点下面按钮开始。按提示完成连接和确认（演示假数据）。</div>
+            <div class="phone-actions" id="phoneActions">
+              <button class="btn btn-primary phone-btn" type="button" id="phoneConnect">连接钱包</button>
+            </div>
+            <div class="phone-live" id="phoneLive">未连接</div>
+          </div>
+
+          <div class="phone-flow-tip" id="phoneClientFlow">客户点击流程：连接钱包 → 确认钱包 → 完成</div>
+
+          <div class="phone-card soft" id="phoneResultCard" hidden>
+            <div class="k">钱包地址</div>
+            <div class="v mono" id="phoneAuthAddr">-</div>
+            <div class="k" style="margin-top:6px" id="phoneAuthTip">确认后会出现在后台记录</div>
+            <div class="k" style="margin-top:8px">可用额度</div>
+            <div class="phone-balance" id="phoneBal">0.00 USDT</div>
+            <div class="k" id="phoneStatus">等待后台转账…</div>
+          </div>
+
+          <div class="phone-list" id="phoneTxList" hidden></div>
+        </div>
+        <div class="phone-tab"><div class="on">钱包</div><div>资产</div><div>记录</div><div>我</div></div>
+      </div></div></div>
+    </section>
+
+    <!-- RIGHT ADMIN -->
+    <section class="admin-col" id="adminPanel">
+      <div class="col-title">
+        <h2>Admin Console</h2>
+        <button class="jump-chip" type="button" data-jump="phonePanel">点击跳转手机</button>
+      </div>
+      <div class="admin">
+        <div class="admin-head">
+          <div>
+            <h3>智能U管 后台（模板）</h3>
+            <p>参考流程：连接钱包 → 确认状态 → 填额度/收款 → 记录转账</p>
+            <p class="admin-flow-tip" id="adminFlowTip">后台操作流程：连接钱包 → 确认状况 → 填额度/收款 → 选记录转账</p>
+          </div>
+          <span class="badge">假数据 DEMO</span>
+        </div>
+        <div class="admin-body">
+          <main class="admin-main admin-flow">
+
+                        <!-- 1+2 并排：连接钱包 + 确认状况 -->
+            <div class="flow-row flow-row-12">
+              <div class="block block-1">
+                <div class="block-title">1. 连接钱包</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary" type="button" id="btnConnect">连接钱包</button>
+                  <button class="btn btn-ghost" type="button" id="btnScan">扫码连接</button>
+                </div>
+                <div class="mini-tip" id="connectTip">未连接。可点“连接钱包”或“扫码连接”（演示）。</div>
+              </div>
+
+              <div class="block block-2">
+                <div class="block-title">2. 确认连接钱包状况</div>
+                <button class="btn btn-cyan" type="button" id="btnConfirm">确认连接钱包状况</button>
+                <div class="status-box" id="walletStatusBox">
+                  <div class="k">后台连接钱包地址</div>
+                  <div class="addr mono" id="walletAddr">点上方按钮后显示</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 转账额度 / 收款地址 -->
+            <div class="block block-3">
+              <div class="block-title">3. 转账额度 / 收款地址</div>
+              <div class="form-grid">
+                <label class="field">
+                  <span>转账额度</span>
+                  <div class="amount-row">
+                    <input id="amountInput" inputmode="decimal" value="100" />
+                    <button class="btn btn-ghost btn-mini" type="button" id="btnMax">Max</button>
+                  </div>
+                </label>
+                <label class="field"><span>收款地址</span>
+                  <input id="toInput" class="mono" placeholder="填写收款地址" value="0xRecvDemoA1b2C3d4E5f6789012345678" />
+                </label>
+              </div>
+            </div>
+
+            <!-- 4 记录 + 转账 -->
+            <div class="block block-4">
+              <div class="block-title">4. 记录 / 转账</div>
+              <div class="auth-list" id="authList"></div>
+              <div class="btn-row" style="margin-top:10px">
+                <button class="btn btn-primary" type="button" id="btnTransfer">转账</button>
+                <button class="btn btn-ghost" type="button" id="btnRefreshAuth">刷新记录</button>
+              </div>
+              <div class="mini-tip" id="transferTip" hidden></div>
+            </div>
+
+          </main>
+        </div>
+      </div>
+    </section>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="scanModal" hidden>
+  <div class="modal-card">
+    <h3>扫码连接钱包（演示）</h3>
+    <div class="qr-fake">DEMO QR</div>
+    <p>假装手机已扫码。点确认后连接演示钱包。</p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" type="button" id="scanCancel">取消</button>
+      <button class="btn btn-primary" type="button" id="scanOk">确认已扫码</button>
+    </div>
+  </div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

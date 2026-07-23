@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>以下範上 · 假U子模板转账 DEMO</title>
+  <style>
+    :root {
+      --bg: #070b10;
+      --card: rgba(10, 16, 24, 0.92);
+      --card-solid: #0c141c;
+      --text: #eef7ff;
+      --muted: rgba(214, 232, 255, 0.62);
+      --line: rgba(94, 234, 212, 0.14);
+      --line-soft: rgba(148, 185, 255, 0.12);
+      --cyan: #63f6d8;
+      --blue: #7aa7ff;
+      --blue-soft: rgba(99, 246, 216, 0.12);
+      --green: #34d399;
+      --red: #fb7185;
+      --pink: #ff6bcb;
+      --shell: 420px;
+      --shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(99, 246, 216, 0.06);
+      --glow: 0 0 24px rgba(99, 246, 216, 0.18);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; min-height: 100%;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(99,246,216,0.10), transparent 35%),
+        radial-gradient(circle at 80% 10%, rgba(122,167,255,0.12), transparent 40%),
+        #05070a;
+    }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { border: 0; cursor: pointer; background: none; }
+    .phone {
+      width: min(100%, var(--shell));
+      min-height: 100vh;
+      margin: 0 auto;
+      background:
+        linear-gradient(180deg, rgba(8,14,22,0.96), rgba(5,8,12,0.98)),
+        radial-gradient(circle at 50% 0%, rgba(99,246,216,0.08), transparent 45%);
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(99,246,216,0.12),
+        0 0 80px rgba(99,246,216,0.08),
+        0 30px 80px rgba(0,0,0,0.45);
+    }
+    .phone::before {
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1px 1px at 70% 20%, rgba(99,246,216,0.45), transparent),
+        radial-gradient(1px 1px at 40% 70%, rgba(122,167,255,0.4), transparent),
+        radial-gradient(1px 1px at 85% 65%, rgba(255,255,255,0.25), transparent);
+      opacity: 0.45;
+      z-index: 0;
+    }
+    .phone > * { position: relative; z-index: 1; }
+    .status-bar {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(8, 14, 22, 0.88);
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .top {
+      background: linear-gradient(180deg, rgba(10,18,26,0.95), rgba(8,14,22,0.88));
+      padding: 8px 16px 14px;
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .wallet-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 12px;
+      background: linear-gradient(135deg, #63f6d8, #7aa7ff);
+      color: #041016; display: grid; place-items: center;
+      font-weight: 800; font-size: 14px; flex: 0 0 auto;
+      box-shadow: 0 0 18px rgba(99,246,216,0.35);
+    }
+    .wallet-switch h1 {
+      margin: 0; font-size: 16px; font-weight: 750; line-height: 1.2;
+      color: #f2fbff;
+      text-shadow: 0 0 18px rgba(99,246,216,0.18);
+    }
+    .wallet-switch p {
+      margin: 2px 0 0;
+      font-size: 10.5px;
+      line-height: 1.35;
+      color: var(--muted);
+      max-width: 220px;
+    }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .pill {
+      height: 28px; padding: 0 10px; border-radius: 999px;
+      background: rgba(122,167,255,0.12); color: #c7d8ff; font-size: 11px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px;
+      border: 1px solid rgba(148,185,255,0.16);
+    }
+    .pill.demo {
+      background: rgba(255,107,203,0.12); color: #ffb3e2;
+      border-color: rgba(255,107,203,0.28);
+      box-shadow: 0 0 14px rgba(255,107,203,0.12);
+      cursor: pointer;
+      user-select: none;
+    }
+    .pill.demo:hover {
+      background: rgba(255,107,203,0.2);
+      box-shadow: 0 0 18px rgba(255,107,203,0.22);
+    }
+    .pill.demo:active { transform: scale(0.98); }
+    .scan {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: rgba(122,167,255,0.10);
+      border: 1px solid rgba(148,185,255,0.14);
+      display: grid; place-items: center; color: #c7d8ff; font-size: 15px;
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      padding: 10px 16px 0;
+    }
+    .step-dot { height: 3px; border-radius: 999px; background: rgba(148,185,255,0.12); overflow: hidden; }
+    .step-dot > i {
+      display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width .3s ease;
+      box-shadow: 0 0 8px rgba(99,246,216,0.55);
+    }
+    .step-dot.is-on > i, .step-dot.is-done > i { width: 100%; }
+    .hint {
+      margin: 10px 16px 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(99,246,216,0.10), rgba(122,167,255,0.08));
+      color: #dffcf5;
+      font-size: 12px;
+      line-height: 1.55;
+      border: 1px solid rgba(99,246,216,0.22);
+      box-shadow: 0 0 20px rgba(99,246,216,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .body { padding: 12px 16px 96px; }
+    .view { display: none; animation: in .22s ease; }
+    .view.is-on { display: block; }
+    @keyframes in { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none;} }
+
+    /* imToken home · dark portfolio skin */
+    .balance-panel {
+      background:
+        linear-gradient(180deg, rgba(12,22,30,0.96), rgba(8,14,22,0.92)),
+        radial-gradient(circle at 80% 0%, rgba(99,246,216,0.12), transparent 40%);
+      border-radius: 18px;
+      padding: 22px 16px 18px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      border: 1px solid rgba(99,246,216,0.16);
+    }
+    .balance-panel .label {
+      font-size: 12px; color: var(--muted);
+    }
+    .balance-panel .amount {
+      margin: 8px 0 4px;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #f4fbff;
+      text-shadow: 0 0 24px rgba(99,246,216,0.2);
+    }
+    .balance-panel .network {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(99,246,216,0.08);
+      color: var(--muted);
+      font-size: 11px;
+      border: 1px solid rgba(99,246,216,0.14);
+    }
+    .addr-row {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .copy-mini {
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: var(--blue-soft);
+      border: 1px solid rgba(99,246,216,0.18);
+    }
+    .ops {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .op {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .op .ico {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 18px; font-weight: 800;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .op:active .ico { transform: scale(0.96); }
+    .op.primary .ico {
+      background: linear-gradient(145deg, #63f6d8, #4bb8ff);
+      color: #041016;
+      box-shadow: 0 8px 20px rgba(99,246,216,0.28), 0 0 0 1px rgba(165,255,236,0.35);
+    }
+    .op.secondary .ico {
+      background: rgba(122,167,255,0.14);
+      color: #cfe0ff;
+      border: 1px solid rgba(122,167,255,0.22);
+      box-shadow: 0 0 16px rgba(122,167,255,0.12);
+    }
+    .op span { font-size: 12px; color: rgba(238,247,255,0.86); font-weight: 600; }
+
+    .section-h {
+      margin: 18px 2px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .section-h button { color: var(--cyan); font-size: 12px; font-weight: 700; }
+
+    .asset-list, .tx-list, .card {
+      background: rgba(10,16,24,0.88);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(148,185,255,0.10);
+    }
+    .asset-item, .tx-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 14px;
+      border-top: 1px solid rgba(148,185,255,0.08);
+      background: transparent;
+    }
+    .asset-item:first-child, .tx-item:first-child { border-top: 0; }
+    .asset-item:active, .tx-item:active { background: rgba(99,246,216,0.06); }
+    .asset-item.is-on {
+      background: linear-gradient(90deg, rgba(99,246,216,0.10), rgba(122,167,255,0.06));
+      box-shadow: inset 3px 0 0 var(--cyan);
+    }
+    .coin {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 800; color: #fff; flex: 0 0 auto;
+      box-shadow: 0 0 16px rgba(0,0,0,0.25);
+    }
+    .coin.usdt { background: linear-gradient(145deg, #2dd4a8, #169f74); }
+    .coin.eth { background: linear-gradient(145deg, #8ea2ff, #627eea); }
+    .coin.btc { background: linear-gradient(145deg, #ffb347, #f7931a); }
+    .meta { flex: 1; min-width: 0; }
+    .meta .n { font-weight: 750; }
+    .meta .s { margin-top: 2px; font-size: 12px; color: var(--muted); }
+    .bal { text-align: right; }
+    .bal .n { font-weight: 800; }
+    .bal .s { margin-top: 2px; font-size: 12px; color: var(--muted); }
+    .tx-dir {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: rgba(122,167,255,0.14); color: var(--blue); flex: 0 0 auto;
+      border: 1px solid rgba(122,167,255,0.18);
+    }
+    .tx-dir.out { background: rgba(251,113,133,0.12); color: var(--red); border-color: rgba(251,113,133,0.22); }
+    .tx-amt { font-weight: 800; }
+    .tx-amt.out { color: var(--red); }
+    .tx-amt.in { color: var(--green); }
+
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block; margin-bottom: 6px;
+      font-size: 12px; color: var(--muted); font-weight: 600;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid rgba(148,185,255,0.14);
+      background: rgba(6,10,16,0.72);
+      border-radius: 12px;
+      padding: 12px 12px;
+      outline: none;
+      color: var(--text);
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: rgba(99,246,216,0.45);
+      background: rgba(8,14,22,0.9);
+      box-shadow: 0 0 0 3px rgba(99,246,216,0.12), 0 0 20px rgba(99,246,216,0.08);
+    }
+    .field textarea { min-height: 88px; resize: vertical; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .chip {
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(99,246,216,0.08); color: #bffaf0; font-size: 12px; font-weight: 700;
+      border: 1px solid rgba(99,246,216,0.16);
+    }
+    .fee {
+      margin-top: 4px; padding: 12px;
+      border-radius: 12px;
+      background: rgba(8,14,22,0.72);
+      border: 1px solid rgba(148,185,255,0.10);
+      font-size: 12px; color: var(--muted); line-height: 1.6;
+    }
+    .fee strong { color: var(--text); }
+
+    .confirm-amount { text-align: center; padding: 8px 0 14px; }
+    .confirm-amount .n {
+      font-size: 34px; font-weight: 850;
+      color: #f4fbff; text-shadow: 0 0 20px rgba(99,246,216,0.18);
+    }
+    .confirm-amount .s { margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .kv {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 12px 0; border-top: 1px solid var(--line); font-size: 13px;
+    }
+    .kv .k { color: var(--muted); }
+    .kv .v { text-align: right; font-weight: 700; word-break: break-all; max-width: 62%; color: #e8f4ff; }
+
+    .success-wrap { text-align: center; padding: 18px 8px 8px; }
+    .ok-circle {
+      width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 50%;
+      background: linear-gradient(135deg, #34d399, #63f6d8 45%, #7aa7ff);
+      color: #041016; display: grid; place-items: center; font-size: 34px;
+      box-shadow: 0 10px 28px rgba(99,246,216,0.28), 0 0 0 1px rgba(165,255,236,0.35);
+    }
+    .success-wrap h3 { margin: 0; font-size: 22px; color: #f4fbff; }
+    .success-wrap p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .hash {
+      margin-top: 16px; padding: 12px; border-radius: 12px;
+      background: rgba(6,10,16,0.72); border: 1px dashed rgba(99,246,216,0.22);
+      font-family: var(--mono); font-size: 11px; color: rgba(214,232,255,0.72);
+      word-break: break-all; text-align: left;
+    }
+
+    .footer {
+      position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+      width: min(100%, var(--shell));
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(7,12,18,0.92);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      display: none; gap: 10px; z-index: 30;
+    }
+    .footer.is-on { display: grid; }
+    .footer.two { grid-template-columns: 1fr 1.35fr; }
+    .btn {
+      min-height: 48px; border-radius: 14px; padding: 12px 14px;
+      font-size: 15px; font-weight: 800;
+    }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-ghost {
+      background: rgba(122,167,255,0.10);
+      color: #d7e5ff;
+      border: 1px solid rgba(148,185,255,0.14);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #63f6d8, #4fe0c5 40%, #7aa7ff);
+      color: #041016;
+      box-shadow: 0 10px 24px rgba(99,246,216,0.22), 0 0 0 1px rgba(165,255,236,0.28);
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+
+    .tabbar {
+      position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+      width: min(100%, var(--shell));
+      height: calc(58px + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: rgba(7,12,18,0.94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      z-index: 20;
+    }
+    .tabbar.hidden { display: none; }
+    .tab {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; color: rgba(214,232,255,0.42); font-size: 11px; font-weight: 600;
+    }
+    .tab.on {
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(99,246,216,0.35);
+    }
+    .tab .ico { font-size: 16px; line-height: 1; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%) translateY(10px);
+      width: min(calc(100% - 32px), 340px); padding: 11px 14px; border-radius: 12px;
+      background: rgba(6,12,18,0.94); color: #eef7ff; font-size: 13px; text-align: center;
+      border: 1px solid rgba(99,246,216,0.18);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35), 0 0 20px rgba(99,246,216,0.08);
+      opacity: 0; pointer-events: none; transition: .22s ease; z-index: 50;
+    }
+
+    /* class aliases / missing styles for current HTML */
+    .section-head {
+      margin: 18px 2px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .list-card {
+      background: rgba(10,16,24,0.88);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(148,185,255,0.10);
+    }
+    .op .circle {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 18px; font-weight: 800;
+      transition: transform .15s ease, box-shadow .15s ease;
+      background: linear-gradient(145deg, #63f6d8, #4bb8ff);
+      color: #041016;
+      box-shadow: 0 8px 20px rgba(99,246,216,0.28), 0 0 0 1px rgba(165,255,236,0.35);
+    }
+    .op.ghost .circle {
+      background: rgba(122,167,255,0.14);
+      color: #cfe0ff;
+      border: 1px solid rgba(122,167,255,0.22);
+      box-shadow: 0 0 16px rgba(122,167,255,0.12);
+    }
+    .op:active .circle { transform: scale(0.96); }
+    .nav {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .nav h2 { margin: 0; font-size: 18px; font-weight: 800; color: #f2fbff; }
+    .back {
+      width: 36px; height: 36px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: rgba(122,167,255,0.10);
+      border: 1px solid rgba(148,185,255,0.14);
+      color: #d7e5ff; font-size: 16px;
+    }
+    .form-card, .confirm-card, .success-card {
+      background: rgba(10,16,24,0.88);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(148,185,255,0.10);
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .row-2 {
+      display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 8px;
+    }
+    .asset-item {
+      width: 100%;
+      text-align: left;
+      color: inherit;
+    }
+
+    /* 斜向品牌水印：右上到左下，白字红描边，略透明 */
+    .wm {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: min(100%, var(--shell));
+      height: 100vh;
+      z-index: 8;
+      pointer-events: none;
+      overflow: hidden;
+      background: transparent;
+      color: transparent;
+      font-size: 0;
+    }
+    .wm-stack {
+      position: absolute;
+      inset: -18% -28%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      gap: 18px;
+      transform: rotate(-32deg);
+      transform-origin: center center;
+      opacity: 0.42;
+    }
+    .wm-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    .wm-logo {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(255, 70, 70, 0.18));
+      opacity: 0.85;
+      flex: 0 0 auto;
+    }
+    .wm-text {
+      writing-mode: horizontal-tb;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.92);
+      -webkit-text-stroke: 1.05px rgba(220, 38, 38, 0.88);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgba(220, 38, 38, 0.9),
+        1px 0 0 rgba(190, 20, 20, 0.85),
+        -1px 0 0 rgba(190, 20, 20, 0.85),
+        0 1px 0 rgba(190, 20, 20, 0.85),
+        0 -1px 0 rgba(190, 20, 20, 0.85),
+        0 0 10px rgba(255, 80, 80, 0.16);
+      opacity: 0.9;
+    }
+    .wm-sub {
+      writing-mode: horizontal-tb;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.88);
+      -webkit-text-stroke: 0.75px rgba(220, 38, 38, 0.72);
+      paint-order: stroke fill;
+      opacity: 0.78;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="app">
+    <div class="status-bar"><span>以下範上</span><span>DEMO</span></div>
+    <div class="top">
+      <div class="top-row">
+        <div class="wallet-switch">
+          <div class="avatar">範</div>
+          <div>
+            <h1>以下範上 Wallet</h1>
+            <p>这只是演示模板，需要进行真实的请联系我进行购买节点</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="pill demo" id="openFlowVideo" title="打开项目1流程视频">视频演示</button>
+          <span class="scan" aria-hidden="true">▣</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps" aria-hidden="true">
+      <div class="step-dot is-on" data-step="0"><i></i></div>
+      <div class="step-dot" data-step="1"><i></i></div>
+      <div class="step-dot" data-step="2"><i></i></div>
+      <div class="step-dot" data-step="3"><i></i></div>
+    </div>
+    <div class="hint" id="hint">提示：完成节点填入后提供收款地址给我，即可获得假U（不限金额）</div>
+
+    <div class="body">
+      <!-- HOME -->
+      <section class="view is-on" data-view="0">
+        <div class="balance-panel">
+          <div class="label">总资产（演示）</div>
+          <div class="amount" id="totalUsd">$0.00</div>
+          <div class="network" id="networkLine">假U子模板转账 · 只需找我进行获得节点</div>
+          <div class="addr-row">
+            <span id="myAddress">0xDEMO...</span>
+            <button class="copy-mini" type="button" id="copyAddrBtn">复制</button>
+          </div>
+          <div class="ops">
+            <button class="op" type="button" id="goReceiveBtn">
+              <div class="circle">↓</div><span>收款</span>
+            </button>
+            <button class="op" type="button" id="goTransferBtn">
+              <div class="circle">↗</div><span>转账</span>
+            </button>
+            <button class="op ghost" type="button" id="goSwapBtn">
+              <div class="circle">⇄</div><span>兑换</span>
+            </button>
+            <button class="op ghost" type="button" id="goHistoryBtn">
+              <div class="circle">≡</div><span>记录</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-head"><span>资产</span><span>可点选币种</span></div>
+        <div class="list-card" id="tokenList"></div>
+
+        <div class="section-head"><span>最近记录</span><span>DEMO</span></div>
+        <div class="list-card" id="homeTxList"></div>
+      </section>
+
+      <!-- FORM -->
+      <section class="view" data-view="1">
+        <div class="nav">
+          <button class="back" type="button" data-back="0">←</button>
+          <h2>转账</h2>
+        </div>
+        <div class="form-card">
+          <div class="field">
+            <label>转出币种</label>
+            <select id="tokenSelect"></select>
+          </div>
+          <div class="field">
+            <label>收款地址</label>
+            <input id="toAddress" placeholder="请输入或粘贴地址" spellcheck="false" />
+            <div class="chips">
+              <button class="chip" type="button" data-fill-addr="0xDemoA1b2C3d4E5f678901234567890abcdef01">示例地址 A</button>
+              <button class="chip" type="button" data-fill-addr="0xDemoB9876543210fedcba0987654321abcdef">示例地址 B</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>金额</label>
+            <div class="row-2">
+              <input id="amountInput" inputmode="decimal" placeholder="0.00" />
+              <select id="amountTokenSelect"></select>
+            </div>
+            <div class="chips">
+              <button class="chip" type="button" data-pct="25">25%</button>
+              <button class="chip" type="button" data-pct="50">50%</button>
+              <button class="chip" type="button" data-pct="100">全部</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>备注（可选）</label>
+            <textarea id="memoInput" placeholder="备注信息"></textarea>
+          </div>
+          <div class="fee">
+            矿工费/手续费：<strong id="feeText">0.00</strong><br />
+            可用余额：<strong id="availText">0.00</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONFIRM -->
+      <section class="view" data-view="2">
+        <div class="nav">
+          <button class="back" type="button" data-back="1">←</button>
+          <h2>确认支付</h2>
+        </div>
+        <div class="confirm-card">
+          <div class="confirm-amount">
+            <div class="n" id="confirmAmount">0</div>
+            <div class="s" id="confirmToken">USDT</div>
+          </div>
+          <div class="kv"><span class="k">收款地址</span><span class="v" id="confirmTo">-</span></div>
+          <div class="kv"><span class="k">付款钱包</span><span class="v" id="confirmFrom">-</span></div>
+          <div class="kv"><span class="k">网络</span><span class="v">假U演示网络</span></div>
+          <div class="kv"><span class="k">手续费</span><span class="v" id="confirmFee">-</span></div>
+          <div class="kv"><span class="k">备注</span><span class="v" id="confirmMemo">无</span></div>
+        </div>
+        <div class="hint" style="margin:12px 0 0;">确认后仅生成演示记录，不会真上链。</div>
+      </section>
+
+      <!-- SUCCESS -->
+      <section class="view" data-view="3">
+        <div class="success-card">
+          <div class="success-wrap">
+            <div class="ok-circle">✓</div>
+            <h3>提交成功</h3>
+            <p id="successText">演示交易已完成</p>
+            <div class="hash" id="txHashBox">0x...</div>
+          </div>
+          <div class="kv"><span class="k">金额</span><span class="v" id="successAmount">-</span></div>
+          <div class="kv"><span class="k">收款</span><span class="v" id="successTo">-</span></div>
+          <div class="kv"><span class="k">状态</span><span class="v" style="color:var(--green)">已确认 · DEMO</span></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer" id="footer">
+      <button class="btn btn-primary" type="button" id="primaryBtn">下一步</button>
+      <button class="btn btn-ghost" type="button" id="secondaryBtn" style="display:none;">返回</button>
+    </div>
+
+    <div class="tabbar" id="tabbar">
+      <div class="tab on"><span class="ico">◈</span><span>钱包</span></div>
+      <div class="tab"><span class="ico">◎</span><span>市场</span></div>
+      <div class="tab"><span class="ico">◌</span><span>浏览器</span></div>
+      <div class="tab"><span class="ico">○</span><span>我</span></div>
+    </div>
+  </div>
+
+  <div class="wm" aria-hidden="true">
+    <div class="wm-stack">
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">DEMO</div></div>
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">假U模板</div></div>
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">不限金额</div></div>
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">DEMO</div></div>
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">假U模板</div></div>
+      <div class="wm-item"><img class="wm-logo" src="./assets/watermark.png" alt="" /><div class="wm-text">以下範上</div><div class="wm-sub">不限金额</div></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      const tokens = [
+        { id: "usdt", symbol: "USDT", name: "Tether USD", bal: 12580.42, usd: 1, fee: 1.2, cls: "usdt" },
+        { id: "eth", symbol: "ETH", name: "Ethereum", bal: 2.1854, usd: 3240, fee: 0.0012, cls: "eth" },
+        { id: "btc", symbol: "BTC", name: "Bitcoin", bal: 0.0842, usd: 64500, fee: 0.00004, cls: "btc" },
+      ];
+      const state = {
+        step: 0,
+        tokenId: "usdt",
+        to: "",
+        amount: "",
+        memo: "",
+        myAddress: "0xDemoF4n5h4n9" + Math.random().toString(16).slice(2, 10).padEnd(26, "a"),
+        txHash: "",
+        history: [
+          { dir: "in", title: "收款", symbol: "USDT", amount: 200, time: "今天 10:21", addr: "0xPeer...91a2" },
+          { dir: "out", title: "转账", symbol: "ETH", amount: 0.05, time: "昨天 21:08", addr: "0xShop...33c0" },
+          { dir: "out", title: "转账", symbol: "USDT", amount: 80, time: "周一 14:02", addr: "0xDemo...bb12" },
+        ],
+      };
+      const $ = (id) => document.getElementById(id);
+      const toastEl = $("toast");
+      let toastTimer = 0;
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("is-on");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("is-on"), 1800);
+      }
+      function money(n, digits) {
+        const x = Number(n);
+        if (!Number.isFinite(x)) return "0";
+        return x.toLocaleString("en-US", { maximumFractionDigits: digits == null ? 2 : digits, minimumFractionDigits: 0 });
+      }
+      function shortAddr(a) {
+        if (!a) return "-";
+        if (a.length < 14) return a;
+        return a.slice(0, 6) + "..." + a.slice(-4);
+      }
+      function currentToken() { return tokens.find((t) => t.id === state.tokenId) || tokens[0]; }
+      function totalUsd() { return tokens.reduce((s, t) => s + t.bal * t.usd, 0); }
+      function renderTokens() {
+        $("tokenList").innerHTML = tokens.map((t) => {
+          const usd = t.bal * t.usd;
+          const dig = t.id === "usdt" ? 2 : 4;
+          return '<button class="asset-item ' + (t.id === state.tokenId ? "is-on" : "") + '" type="button" data-token="' + t.id + '">' +
+            '<div class="coin ' + t.cls + '">' + t.symbol.slice(0, 1) + '</div>' +
+            '<div class="meta"><div class="n">' + t.symbol + '</div><div class="s">' + t.name + '</div></div>' +
+            '<div class="bal"><div class="n">' + money(t.bal, dig) + '</div><div class="s">≈ $' + money(usd) + '</div></div></button>';
+        }).join("");
+        $("tokenSelect").innerHTML = tokens.map((t) => '<option value="' + t.id + '">' + t.symbol + " · 余额 " + money(t.bal, t.id === "usdt" ? 2 : 4) + '</option>').join("");
+        $("amountTokenSelect").innerHTML = tokens.map((t) => '<option value="' + t.id + '">' + t.symbol + '</option>').join("");
+        $("tokenSelect").value = state.tokenId;
+        $("amountTokenSelect").value = state.tokenId;
+      }
+      function renderHistory() {
+        $("homeTxList").innerHTML = state.history.slice(0, 3).map((tx) => {
+          const out = tx.dir === "out";
+          return '<div class="tx-item"><div class="tx-dir ' + (out ? "out" : "") + '">' + (out ? "↗" : "↓") + '</div>' +
+            '<div class="meta"><div class="n">' + tx.title + " · " + tx.symbol + '</div><div class="s">' + tx.time + " · " + tx.addr + '</div></div>' +
+            '<div class="tx-amt ' + (out ? "out" : "in") + '">' + (out ? "-" : "+") + money(tx.amount, 4) + '</div></div>';
+        }).join("");
+      }
+      function updateFeeTexts() {
+        const t = currentToken();
+        $("feeText").textContent = money(t.fee, 6) + " " + t.symbol;
+        $("availText").textContent = money(t.bal, t.id === "usdt" ? 2 : 4) + " " + t.symbol;
+      }
+      function fillConfirm() {
+        const t = currentToken();
+        const amt = Number(state.amount);
+        $("confirmAmount").textContent = money(amt, t.id === "usdt" ? 2 : 6);
+        $("confirmToken").textContent = t.symbol;
+        $("confirmTo").textContent = state.to;
+        $("confirmFee").textContent = money(t.fee, 6) + " " + t.symbol;
+        $("confirmMemo").textContent = state.memo || "无";
+        $("confirmFrom").textContent = shortAddr(state.myAddress);
+      }
+      function setStep(step) {
+        state.step = step;
+        document.querySelectorAll(".view").forEach((v) => v.classList.toggle("is-on", Number(v.dataset.view) === step));
+        document.querySelectorAll(".step-dot").forEach((d) => {
+          const n = Number(d.dataset.step);
+          d.classList.toggle("is-on", n === step);
+          d.classList.toggle("is-done", n < step);
+        });
+        const footer = $("footer");
+        const primary = $("primaryBtn");
+        const secondary = $("secondaryBtn");
+        const tabbar = $("tabbar");
+        const hint = $("hint");
+        if (step === 0) {
+          footer.className = "footer";
+          footer.classList.remove("is-on");
+          tabbar.classList.remove("hidden");
+          hint.textContent = "提示：完成节点填入后提供收款地址给我，即可获得假U（不限金额）";
+        } else if (step === 1) {
+          tabbar.classList.add("hidden");
+          footer.className = "footer two is-on";
+          secondary.style.display = "block";
+          secondary.textContent = "取消";
+          primary.textContent = "下一步";
+          primary.disabled = false;
+          hint.textContent = "填好节点后，把收款地址发我，即可获得假U（不限金额 · 演示）";
+          updateFeeTexts();
+        } else if (step === 2) {
+          tabbar.classList.add("hidden");
+          footer.className = "footer two is-on";
+          secondary.style.display = "block";
+          secondary.textContent = "返回修改";
+          primary.textContent = "确认转账";
+          primary.disabled = false;
+          hint.textContent = "确认后仅生成演示记录，不会真上链。";
+          fillConfirm();
+        } else {
+          tabbar.classList.add("hidden");
+          footer.className = "footer two is-on";
+          secondary.style.display = "block";
+          secondary.textContent = "再转一笔";
+          primary.textContent = "完成";
+          primary.disabled = false;
+          hint.textContent = "演示完成。需要假U（不限金额）就找我拿节点，再继续转。";
+        }
+      }
+      function validateForm() {
+        const t = currentToken();
+        const to = ($("toAddress").value || "").trim();
+        const amountRaw = ($("amountInput").value || "").trim();
+        const amount = Number(amountRaw);
+        const memo = ($("memoInput").value || "").trim();
+        if (!to || to.length < 10) { toast("请先填写收款地址"); return false; }
+        if (!amountRaw || !Number.isFinite(amount) || amount <= 0) { toast("金额需大于 0"); return false; }
+        if (amount + t.fee > t.bal + 1e-12) { toast("余额不足"); return false; }
+        state.to = to; state.amount = String(amount); state.memo = memo;
+        return true;
+      }
+      function submitTransfer() {
+        const t = currentToken();
+        const amount = Number(state.amount);
+        t.bal = Math.max(0, t.bal - amount - t.fee);
+        state.txHash = "0xDEMO" + Date.now().toString(16) + Math.random().toString(16).slice(2, 10);
+        state.history.unshift({ dir: "out", title: "转账", symbol: t.symbol, amount, time: "刚刚", addr: shortAddr(state.to) });
+        $("successText").textContent = "已向 " + shortAddr(state.to) + " 转出 " + money(amount, 6) + " " + t.symbol;
+        $("txHashBox").textContent = state.txHash;
+        $("successAmount").textContent = money(amount, 6) + " " + t.symbol;
+        $("successTo").textContent = state.to;
+        $("totalUsd").textContent = "$" + money(totalUsd());
+        renderTokens(); renderHistory(); setStep(3); toast("演示转账成功");
+      }
+      function boot() {
+        $("myAddress").textContent = state.myAddress;
+        $("totalUsd").textContent = "$" + money(totalUsd());
+        $("confirmFrom").textContent = shortAddr(state.myAddress);
+        renderTokens(); renderHistory(); updateFeeTexts(); setStep(0);
+      }
+      $("goTransferBtn").addEventListener("click", () => setStep(1));
+      $("goReceiveBtn").addEventListener("click", () => toast("收款地址已在上方，可点复制"));
+      $("goHistoryBtn").addEventListener("click", () => toast("最近记录在下方，转账后会更新"));
+      $("goSwapBtn").addEventListener("click", () => toast("兑换为演示占位，先走转账流程"));
+      $("copyAddrBtn").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(state.myAddress); toast("地址已复制"); }
+        catch { toast(state.myAddress); }
+      });
+      document.querySelectorAll("[data-back]").forEach((btn) => btn.addEventListener("click", () => setStep(Number(btn.dataset.back))));
+      $("tokenList").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-token]");
+        if (!btn) return;
+        state.tokenId = btn.dataset.token;
+        renderTokens(); updateFeeTexts(); toast("已选择 " + currentToken().symbol);
+      });
+      $("tokenSelect").addEventListener("change", (e) => {
+        state.tokenId = e.target.value; $("amountTokenSelect").value = state.tokenId; renderTokens(); updateFeeTexts();
+      });
+      $("amountTokenSelect").addEventListener("change", (e) => {
+        state.tokenId = e.target.value; $("tokenSelect").value = state.tokenId; renderTokens(); updateFeeTexts();
+      });
+      document.querySelectorAll("[data-fill-addr]").forEach((btn) => btn.addEventListener("click", () => {
+        $("toAddress").value = btn.dataset.fillAddr; toast("已填入示例地址");
+      }));
+      document.querySelectorAll("[data-pct]").forEach((btn) => btn.addEventListener("click", () => {
+        const t = currentToken();
+        const pct = Number(btn.dataset.pct) / 100;
+        const leave = Math.max(0, t.bal - t.fee);
+        $("amountInput").value = String(Number((leave * pct).toFixed(t.id === "usdt" ? 2 : 6)));
+      }));
+      $("secondaryBtn").addEventListener("click", () => {
+        if (state.step === 1) setStep(0);
+        else if (state.step === 2) setStep(1);
+        else if (state.step === 3) {
+          state.amount = ""; state.memo = "";
+          $("amountInput").value = ""; $("memoInput").value = "";
+          setStep(1);
+        }
+      });
+      $("primaryBtn").addEventListener("click", () => {
+        if (state.step === 1) { if (validateForm()) setStep(2); }
+        else if (state.step === 2) {
+          const btn = $("primaryBtn"); btn.disabled = true; btn.textContent = "提交中...";
+          setTimeout(submitTransfer, 700);
+        } else if (state.step === 3) setStep(0);
+      });
+      
+      // 角标「视频演示」→ 项目1 流程视频
+      const openFlowBtn = document.getElementById("openFlowVideo");
+      if (openFlowBtn) {
+        openFlowBtn.addEventListener("click", () => {
+          const payload = {
+            type: "portfolio-open-flow-video",
+            demoId: "wallet-transfer",
+            video: "./flow.mp4",
+          };
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.postMessage(payload, "*");
+              return;
+            }
+          } catch (_) {}
+          // 独立打开演示页时，直接新开视频
+          window.open("./flow.mp4", "_blank", "noopener,noreferrer");
+        });
+      }
+      boot();
+    })();
+  </script>
+</body>
+</html>
